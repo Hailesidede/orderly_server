@@ -72,7 +72,7 @@ public class OrderServiceImpl implements OrderService {
             product.setStockQuantity(product.getStockQuantity() - itemReq.quantity());
 
             // Calculate item total
-            BigDecimal itemTotal = product.getPrice().multiply(BigDecimal.valueOf(itemReq.quantity()));
+            BigDecimal itemTotal = product.getBasePrice().multiply(BigDecimal.valueOf(itemReq.quantity()));
             totalAmount = totalAmount.add(itemTotal);
 
             // Build OrderItem
