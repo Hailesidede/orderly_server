@@ -134,7 +134,7 @@ public class ProductService {
                 product.getName(),
                 product.getDescription(),
                 product.getCategoryId(),
-                product.getPrice(),
+                product.getBasePrice(),
                 product.getImageUrl(),
                 storeName
         );
