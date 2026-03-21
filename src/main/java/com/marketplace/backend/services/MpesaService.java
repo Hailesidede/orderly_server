@@ -30,7 +30,7 @@ public class MpesaService {
     @Value("${safaricom.mpesa.stk.passkey}")
     private String passkey;
 
-    @Value("${safaricom.mpesa.b2c.result-url}")
+    @Value("${safaricom.mpesa.c2b.result-url}")
     private String callbackUrl;
 
     @Value("${mpesa.base-url}")
