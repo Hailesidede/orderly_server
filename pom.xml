@@ -42,10 +42,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency> -->
-		<!-- <dependency>
+		<dependency>
     <groupId>com.fasterxml.jackson.core</groupId>
     <artifactId>jackson-databind</artifactId>
-</dependency> -->
+</dependency>
 
 <!--		<dependency>-->
 <!--			<groupId>org.liquibase</groupId>-->
