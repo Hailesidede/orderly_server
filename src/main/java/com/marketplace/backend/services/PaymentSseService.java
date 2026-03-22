@@ -17,10 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor // FIX 3: Added the Lombok annotation so Spring injects your variables!
 public class PaymentSseService {
 
-    @Bean
-public com.fasterxml.jackson.databind.ObjectMapper objectMapper() {
-    return new com.fasterxml.jackson.databind.ObjectMapper();
-}
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
     
     private final StringRedisTemplate redisTemplate;
