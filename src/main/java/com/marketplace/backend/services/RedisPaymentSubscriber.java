@@ -11,11 +11,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class RedisPaymentSubscriber {
 
-    @Bean
-public com.fasterxml.jackson.databind.ObjectMapper objectMapper() {
-    return new com.fasterxml.jackson.databind.ObjectMapper();
-}
-
     private final PaymentSseService sseService;
     private final ObjectMapper objectMapper;
 
