@@ -1,6 +1,9 @@
 package com.marketplace.backend.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -12,42 +15,58 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class PaymentSseService {
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
+    
+    private final StringRedisTemplate redisTemplate;
+    private final ObjectMapper objectMapper;
 
     public SseEmitter subscribe(String checkoutRequestId) {
-        // 10-minute timeout. Outlasts Safaricom's internal STK push timeout.
         SseEmitter emitter = new SseEmitter(600_000L);
         emitters.put(checkoutRequestId, emitter);
-
+        
         emitter.onCompletion(() -> emitters.remove(checkoutRequestId));
         emitter.onTimeout(() -> emitters.remove(checkoutRequestId));
         emitter.onError((e) -> emitters.remove(checkoutRequestId));
-
-        // Send a dummy INIT event to immediately flush the response headers
-        // and keep reverse proxies (like Nginx) from dropping the connection.
+        
         try {
             emitter.send(SseEmitter.event().name("INIT").data("Connected"));
         } catch (IOException e) {
             emitters.remove(checkoutRequestId);
         }
-
         return emitter;
     }
 
-    public void notifyPaymentResult(String checkoutRequestId, String status, String message) {
+    public void publishPaymentResult(String checkoutRequestId, String status, String message) {
+        try {
+            Map<String, String> payload = Map.of(
+                    "checkoutRequestId", checkoutRequestId,
+                    "status", status,
+                    "message", message
+            );
+            String json = objectMapper.writeValueAsString(payload);
+            
+            redisTemplate.convertAndSend(RedisPubSubConfig.PAYMENT_TOPIC, json);
+            log.info("Published payment result to Redis for Checkout ID: {}", checkoutRequestId);
+            
+        } catch (Exception e) {
+            log.error("Failed to publish to Redis for Checkout ID: {}", checkoutRequestId, e);
+        }
+    }
+
+    public void notifyPaymentResultLocal(String checkoutRequestId, String status, String message) {
         SseEmitter emitter = emitters.get(checkoutRequestId);
+        
         if (emitter != null) {
             try {
                 emitter.send(SseEmitter.event()
                         .name("PAYMENT_RESULT")
                         .data(Map.of("status", status, "message", message)));
-                emitter.complete(); // Close the connection gracefully
+                emitter.complete(); 
+                log.info("Successfully pushed SSE event to client for Checkout ID: {}", checkoutRequestId);
             } catch (IOException e) {
-                log.error("Failed to push SSE to client for CheckoutRequestID: {}", checkoutRequestId);
+                log.error("Failed to push SSE to client", e);
+            } finally {
                 emitters.remove(checkoutRequestId);
             }
-        } else {
-            // This happens if the user closed their browser tab before entering their PIN
-            log.warn("No active SSE connection found for CheckoutRequestID: {}", checkoutRequestId);
-        }
+        } 
     }
 }
