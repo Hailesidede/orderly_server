@@ -66,7 +66,8 @@ public class LedgerService {
         }
 
         // 2. THE VAULT CHECK: Does the math equal the actual money Safaricom sent us?
-        BigDecimal expectedTotal = totalDeliveryPool.add(totalPlatformCommission).add(totalMerchantPayout);
+      //  BigDecimal expectedTotal = totalDeliveryPool.add(totalPlatformCommission).add(totalMerchantPayout);
+          BigDecimal expectedTotal = totalPlatformCommission.add(totalMerchantPayout);
         if (expectedTotal.compareTo(mpesaTotalAmount) != 0) {
             throw new IllegalStateException(
                     String.format("FATAL: Order math mismatch. M-Pesa sent %s, but Ledger calculated %s",
