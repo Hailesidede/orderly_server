@@ -1,7 +1,7 @@
 package com.marketplace.backend.services; // FIX 1: Lowercase 'p'
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.marketplace.backend.configs.RedisPubSubConfig; // FIX 2: Imported the config class!
+// import com.marketplace.backend.configs.RedisPubSubConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
