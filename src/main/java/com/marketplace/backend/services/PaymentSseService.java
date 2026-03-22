@@ -1,6 +1,7 @@
-package com.marketplace.backend.services;
+package com.marketplace.backend.services; // FIX 1: Lowercase 'p'
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.marketplace.backend.config.RedisPubSubConfig; // FIX 2: Imported the config class!
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -13,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor // FIX 3: Added the Lombok annotation so Spring injects your variables!
 public class PaymentSseService {
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
     
