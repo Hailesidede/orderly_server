@@ -146,7 +146,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             paymentRepository.save(payment);
             orderRepository.save(order);
-            paymentSseService..publishPaymentResult(checkoutRequestId, "FAILED", stkCallback.resultDesc());
+            paymentSseService.publishPaymentResult(checkoutRequestId, "FAILED", stkCallback.resultDesc());
             return;// Keep order pending so they can retry
         }
 
@@ -181,7 +181,7 @@ public class PaymentServiceImpl implements PaymentService {
         ledgerService.recordMarketplaceSale(mpesaReceiptNumber, order, payment.getAmount());
         eventPublisher.publishEvent(new OrderPaidEvent(order.getId()));
 
-        paymentSseService..publishPaymentResult(checkoutRequestId, "SUCCESS", "Payment received successfully.");
+        paymentSseService.publishPaymentResult(checkoutRequestId, "SUCCESS", "Payment received successfully.");
         log.info("Successfully processed payment {} for Order {}", mpesaReceiptNumber, order.getId());
     }
 
